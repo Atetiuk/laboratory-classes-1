@@ -1,14 +1,24 @@
-// 📦 Zaimportuj moduły 'fs' oraz 'STATUS_CODE' do obsługi produktów.
+const fs = require('fs');
+const { FOUND } = require('../constants/statusCode');
 
-// 🏗 Stwórz funkcję 'productRouting', która obsłuży żądania dotyczące produktów.
-
-// 🏗 Stwórz funkcję 'renderAddProductPage', która wyrenderuje stronę dodawania produktu.
-
-// 🏗 Stwórz funkcję 'renderNewProductPage', która wyświetli najnowszy produkt z pliku 'product.txt'.
-// Podpowiedź: fileSystem.readFile(...);
-
-// 🏗 Stwóz funkcję 'addNewProduct', która obsłuży dodawanie nowego produktu, zapisywanie go do pliku 'product.txt' oraz przeniesie użytkownika na stronę '/product/new'.
-// Podpowiedź: fileSystem.writeFile(...);
-// Podpowiedź: response.setHeader("Location", "/product/new");
-
-// 🔧 Wyeksportuj funkcję 'productRouting', aby inne moduł mogły jej używać.
+const productRouting = (url, method, response) => {
+    response.writeHead(200, { 'Content-Type': 'text/html' });
+    if (url === '/product/add' && method === 'GET') {
+        response.end('<html><head><title>Shop - Add product</title></head><body><h1>Add Product</h1><form method="POST" action="/product/add"><input name="name" /><textarea name="description"></textarea><button type="submit">Add</button></form></body></html>');
+    } else if (url === '/product/add' && method === 'POST') {
+        let body = '';
+        request.on('data', chunk => body += chunk);
+        request.on('end', () => {
+            fs.writeFileSync('product.txt', body);
+            response.writeHead(FOUND, { 'Location': '/product/new' });
+            response.end();
+        });
+    } else if (url === '/product/new') {
+        const data = fs.existsSync('product.txt') ? fs.readFileSync('product.txt', 'utf8') : 'No products found';
+        response.end(`<html><head><title>Shop - Newest product</title></head><body><h1>Newest Product</h1><p>${data}</p></body></html>`);
+    } else {
+        response.writeHead(404, { 'Content-Type': 'text/plain' });
+        response.end('ERROR: requested url doesn’t exist.');
+    }
+};
+module.exports = productRouting;
